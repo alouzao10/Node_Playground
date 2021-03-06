@@ -18,6 +18,10 @@ const app = express();
 // Search for an active port w/in the server environment or assign one by default
 const PORT_NUM = process.env.PORT || 3000;
 
+// Set up the Body Parser middleware
+app.use(express.json()); // allow to handle raw json
+app.use(express.urlencoded({extended: false})); // allow to handle url encoded data
+
 // Initialize the custom middleware for use in the app
 app.use(logger);
 
