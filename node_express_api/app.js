@@ -2,10 +2,19 @@
 
 // Bringing in the express module
 const express = require("express");
+// Bring in any middleware moduels
+const logger = require("./middleware/logger");
 // Setting a port number for the server to run on
 const PORT_NUM = process.env.PORT || 3000;
 // Creating an instance of the express server
 const app = express();
+
+// Set up the Body Parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Use the custome middleware fucntion
+app.use(logger);
 
 // Use external routes within the app server
 app.use("/api/courses", require("./routes/api/courses"));

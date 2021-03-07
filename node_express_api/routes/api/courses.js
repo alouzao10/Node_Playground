@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const uuid = require("uuid");
+
 const courses = require("../../data/Courses.js");
 
 router.get("/", (req, res) => {
@@ -13,9 +15,11 @@ router.get("/:id", (req, res) => {
    let course;
    switch (queryString.type) {
       case "id":
-         course = courses.filter((course) => course.id === courseVal);
+         // http://localhost:3000/api/courses/4?type=id
+         http: course = courses.filter((course) => course.id === courseVal);
          break;
       case "grade":
+         // http://localhost:3000/api/courses/11?type=grade
          course = courses.filter((course) => course.grade === courseVal);
          break;
       default:
@@ -28,21 +32,40 @@ router.get("/:id", (req, res) => {
    }
 });
 
-router.get("/:grade/:id", (req, res) => {
+router.get("/:grade/:full", (req, res) => {
+   console.log(req.params);
    let courseGrade = parseInt(req.params.grade);
-   let courseID = parseInt(req.params.id);
+   let courseFull = req.params.full;
    let course = courses
       .filter((course) => course.grade === courseGrade)
-      .filter((course) => course.id === courseID);
+      .filter((course) => course.full.toString() === courseFull);
    if (course.length > 0) {
       res.status(200).json({
-         msg: `Your course id: ${courseID}, was found for grade: ${courseGrade}`,
+         msg: "Courses Found",
          course,
       });
    } else {
       res.status(400).json({
-         err: `Course id: ${courseID}, Was Not Found For grade: ${courseGrade}`,
+         err: "Courses Not Found",
       });
+   }
+});
+
+router.post("/newCourse", (req, res) => {
+   console.log(req.body);
+   let data = req.body;
+   let newCourse = {
+      id: uuid.v4(),
+      class: data.class,
+      teacher: data.teacher,
+      grade: data.grade,
+      full: false,
+   };
+   if (!newCourse.class || !newCourse.teacher || !newCourse.grade) {
+      res.status(400).json({ msg: "ERROR: Please provide class info..." });
+   } else {
+      courses.push(newCourse);
+      res.status(200).json(courses);
    }
 });
 
